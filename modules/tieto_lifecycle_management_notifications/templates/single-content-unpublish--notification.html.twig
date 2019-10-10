@@ -1,0 +1,28 @@
+{#Variables:#}
+{#- user_name: full name of the user (publisher or information owner)#}
+{#- entity_delete_date: delete date formatted with the tieto_date#}
+{#- pages: array of pages#}
+{#    - page: \Drupal\tieto_lifecycle_management_notifications\Data\EntityLifeCycleData object #}
+{#- contact_mail: email address#}
+<div>
+    <p>Hello <span>{{ user_name }}</span>,</p>
+
+    <p>We have now unpublished the Intra page you have published or where you are marked as an information owner.
+        The content was not updated within the previous 12 months.
+        If the page is still needed, you can find it in an unpublished mode in the Intra publishing platform
+        until <span>{{ entity_delete_date }}</span>.
+        The page can be published again during that timeframe.</p>
+
+    <p>Follow the link(s) to review the pages:</p>
+    {# @todo: Pages have been turned from array to class, test this. #}
+    <ul>
+        {% for page in pages %}
+            <li><a href="{{ page.url }}" target="_blank" rel="noreferrer noopener nofollow">{{ page.title }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <p>Kind regards,</p>
+    <p>Your Intra administrator</p>
+
+    <p>In case you have questions related to this email you’re welcome to contact <a href="mailto:{{ contact_mail }}">{{ contact_mail }}</a></p>
+</div>

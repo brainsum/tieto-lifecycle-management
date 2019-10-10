@@ -1,0 +1,28 @@
+services:
+  tieto_lifecycle_management_notifications.notification_storage:
+    class: Drupal\tieto_lifecycle_management_notifications\Service\NotificationStorage
+    arguments:
+      - '@keyvalue.database'
+
+  tieto_lifecycle_management_notifications.mailer:
+    class: Drupal\tieto_lifecycle_management_notifications\Service\Mailer
+    arguments:
+      - '@plugin.manager.mail'
+      - '@renderer'
+      - '@config.factory'
+      - '@tieto_lifecycle_management_notifications.notification_storage'
+      - '@logger.factory'
+
+  tieto_lifecycle_management_notifications.life_cycle_subscriber:
+    class: Drupal\tieto_lifecycle_management_notifications\EventSubscriber\LifeCycleEventSubscriber
+    arguments:
+      - '@tieto_lifecycle_management_notifications.mailer'
+      - '@tieto_lifecycle_management_notifications.notification_storage'
+      - '@tieto_lifecycle_management.moderation_helper'
+      - '@datetime.time'
+      - '@date.formatter'
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@tieto_lifecycle_management.entity_time'
+    tags:
+      - { name: 'event_subscriber' }

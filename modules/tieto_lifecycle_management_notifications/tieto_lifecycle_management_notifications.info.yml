@@ -1,0 +1,13 @@
+name: Tieto Life-cycle management notifications
+type: module
+description: Notifications feature for the content life-cycle management module.
+core: 8.x
+package: Tieto
+
+php: 7.2
+
+configure: tieto_lifecycle_management_notifications.configuration_form
+
+dependencies:
+  - tieto_lifecycle_management:tieto_lifecycle_management
+  - drupal:user

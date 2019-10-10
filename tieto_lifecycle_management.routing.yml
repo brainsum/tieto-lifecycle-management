@@ -1,0 +1,15 @@
+tieto_lifecycle_management.config_page_list:
+  path: '/admin/config/tieto_lifecycle_management'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'Life-cycle management'
+  requirements:
+    _permission: 'administer site configuration'
+
+tieto_lifecycle_management.configuration_form:
+  path: '/admin/config/tieto_lifecycle_management/configuration'
+  defaults:
+    _form: '\Drupal\tieto_lifecycle_management\Form\ConfigurationForm'
+    _title: 'Life-cycle configuration'
+  requirements:
+    _permission: 'administer site configuration'

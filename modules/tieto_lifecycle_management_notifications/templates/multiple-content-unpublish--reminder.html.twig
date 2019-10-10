@@ -1,0 +1,28 @@
+{#Variables:#}
+{#- user_name: full name of the user (publisher or information owner)#}
+{#- pages: array of pages#}
+{#    - page: \Drupal\tieto_lifecycle_management_notifications\Data\EntityLifeCycleData object #}
+{#- contact_mail: email address#}
+<div>
+    Hello {{ user_name }},
+
+    The page you have published or where you are marked as an information owner is near to its expiration date.
+    Please review the page, and either update and publish it again or withdraw it.
+    Otherwise the page will be automatically unpublished.
+
+    Follow the link(s) to review the pages:
+    <ul>
+        {% for page in pages %}
+            <li>
+                <a href="{{ page.url }}" target="_blank" rel="noreferrer noopener nofollow">{{ page.title }}</a>
+                <span class="entity-unpublish-date">Unpublish date: {{ page.unpublishDate }}</span>
+            </li>
+        {% endfor %}
+    </ul>
+
+    Kind regards,
+    Your Intra administrator
+
+    In case you have questions related to this email you’re welcome to contact <a
+            href="mailto:{{ contact_mail }}">{{ contact_mail }}</a>
+</div>

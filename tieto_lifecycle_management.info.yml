@@ -1,0 +1,15 @@
+name: Tieto Life-cycle management
+type: module
+description: Content life-cycle management.
+core: 8.x
+package: Tieto
+
+php: 7.2
+
+configure: tieto_lifecycle_management.configuration_form
+
+dependencies:
+  - drupal:node
+  - drupal:field
+  - scheduled_updates:scheduled_updates
+  - workbench_moderation:workbench_moderation

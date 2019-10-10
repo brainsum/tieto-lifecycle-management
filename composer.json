@@ -1,0 +1,38 @@
+{
+    "name": "brainsum/tieto_lifecycle_management",
+    "description": "Entity life-cycle management.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "mhavelant",
+            "email": "mhavelant@brainsum.com"
+        }
+    ],
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": "^7.2",
+        "ext-json": "*",
+        "drupal/scheduled_updates": "^1.0",
+        "drupal/workbench_moderation": "^1.0",
+        "drupal/core": "^8.5",
+        "cweagans/composer-patches": "~1.5",
+        "wikimedia/composer-merge-plugin": "^1.4"
+    },
+    "require-dev": {
+        "brainsum/drupal-behat-testing": "^0.11",
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brainsum\\tieto_lifecycle_management\\Tests\\Behat\\": "tests/Behat/"
+        }
+    }
+}

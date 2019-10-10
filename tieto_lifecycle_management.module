@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * @file
+ * Module hooks.
+ */
+
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_cron().
+ */
+function tieto_lifecycle_management_cron() {
+  /** @var \Drupal\tieto_lifecycle_management\Service\ModerationHelper $moderationHelper */
+  $moderationHelper = \Drupal::service('tieto_lifecycle_management.moderation_helper');
+  $moderationHelper->runOperations();
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function tieto_lifecycle_management_form_alter(
+  array &$form,
+  FormStateInterface $form_state,
+  $form_id
+) {
+  $formObject = $form_state->getFormObject();
+
+  if ($formObject instanceof EntityFormInterface) {
+    /** @var \Drupal\Core\Entity\EntityFormInterface $formObject */
+    $entity = $formObject->getEntity();
+
+    if ($entity instanceof ContentEntityInterface) {
+      /** @var \Drupal\tieto_lifecycle_management\Service\ModerationHelper $moderationHelper */
+      $moderationHelper = \Drupal::service('tieto_lifecycle_management.moderation_helper');
+
+      if (
+        ($message = $moderationHelper->notificationMessage($entity))
+        && $message !== NULL
+      ) {
+        $messageElement = [
+          '#type' => 'container',
+          '#attributes' => [
+            'class' => [
+              'life-cycle-message-wrapper',
+              'messages',
+              'messages--warning',
+            ],
+          ],
+          '#weight' => ($form['author']['#weight'] ?? 140) + 10,
+          'life_cycle_message' => [
+            '#markup' => $message,
+            '#attributes' => [
+              'class' => [
+                'life-cycle-message',
+              ],
+            ],
+          ],
+        ];
+
+        // @todo: What if tieto_form_footer does not exist?
+        $form['tieto_form_footer']['life_cycle_message_wrapper'] = $messageElement;
+      }
+    }
+  }
+}

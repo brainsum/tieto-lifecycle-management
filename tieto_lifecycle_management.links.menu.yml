@@ -1,0 +1,13 @@
+tieto_lifecycle_management.config_page_list:
+  title: 'Life-cycle management'
+  route_name: tieto_lifecycle_management.config_page_list
+  parent: system.admin_config
+  description: 'Life-cycle management configurations'
+  weight: -10
+
+tieto_lifecycle_management.configuration_form:
+  title: 'Life-cycle configuration'
+  route_name: tieto_lifecycle_management.configuration_form
+  parent: tieto_lifecycle_management.config_page_list
+  description: 'Configure life-cycle settings'
+  weight: 0

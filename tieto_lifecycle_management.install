@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Install and update routines.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function tieto_lifecycle_management_install() {
+  \module_set_weight('tieto_lifecycle_management', 15);
+}
+
+/**
+ * Clear caches.
+ */
+function tieto_lifecycle_management_update_8601() {
+  drupal_flush_all_caches();
+}
+
+/**
+ * Add the messages key to the config.
+ */
+function tieto_lifecycle_management_update_8602() {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management.settings');
+  $config->set('messages', []);
+  $config->save();
+}
+
+/**
+ * Add the target_state key to the fields config.
+ */
+function tieto_lifecycle_management_update_8603() {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management.settings');
+
+  $fieldsConfig = $config->get('fields');
+  foreach ($fieldsConfig as $contentType => $bundles) {
+    foreach ($bundles as $bundle => $fields) {
+      foreach ($fields as $field => $fieldData) {
+        if (empty($fieldsConfig[$contentType][$bundle][$field]['target_state'])) {
+          $fieldsConfig[$contentType][$bundle][$field]['target_state'] = '';
+        }
+      }
+    }
+  }
+
+  $config->set('fields', $fieldsConfig);
+  $config->save();
+}
+
+/**
+ * Clear caches.
+ */
+function tieto_lifecycle_management_update_8604() {
+  drupal_flush_all_caches();
+}
+
+/**
+ * Add "enabled" field, add "actions" top level key.
+ */
+function tieto_lifecycle_management_update_8605() {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management.settings');
+
+  $fieldsConfig = $config->get('fields');
+  foreach ($fieldsConfig as $contentType => $bundles) {
+    foreach ($bundles as $bundle => $fields) {
+      foreach ($fields as $field => $fieldData) {
+        if (empty($fieldsConfig[$contentType][$bundle][$field]['enabled'])) {
+          $fieldsConfig[$contentType][$bundle][$field]['enabled'] = TRUE;
+        }
+      }
+    }
+  }
+  $config->set('fields', $fieldsConfig);
+
+  $actionsConfig = $config->get('actions') ?? [];
+
+  // Init if needed.
+  if (empty($actionsConfig)) {
+    $config->set('actions', $actionsConfig);
+  }
+
+  $config->save();
+
+  drupal_flush_all_caches();
+}
+
+/**
+ * Initialize the new "disabled" config key if needed.
+ */
+function tieto_lifecycle_management_update_8606() {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management.settings');
+
+  $disabledConfig = $config->get('disabled');
+
+  if (!is_bool($disabledConfig)) {
+    $config->set('disabled', FALSE);
+    $config->save();
+  }
+
+  drupal_flush_all_caches();
+}

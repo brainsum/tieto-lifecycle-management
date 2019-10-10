@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Module file.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function tieto_lifecycle_management_notifications_theme() {
+  return [
+    'multiple_content_unpublish__reminder' => [
+      'variables' => [
+        'user_name' => '',
+        'pages' => [],
+        'contact_mail' => '',
+      ],
+    ],
+    'multiple_content_unpublish__notification' => [
+      'variables' => [
+        'user_name' => '',
+        'pages' => [],
+        'contact_mail' => '',
+      ],
+    ],
+    'single_content_unpublish__reminder' => [
+      'variables' => [
+        'user_name' => '',
+        'entity_unpublish_date' => '',
+        'pages' => [],
+        'contact_mail' => '',
+      ],
+    ],
+    'single_content_unpublish__notification' => [
+      'variables' => [
+        'user_name' => '',
+        'entity_delete_date' => '',
+        'pages' => [],
+        'contact_mail' => '',
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_mail().
+ */
+function tieto_lifecycle_management_notifications_mail($key, &$message, $params) {
+  if (!in_array($key, [
+    'life_cycle_notification__unpublish_reminder',
+    'life_cycle_notification__unpublish_notification',
+  ], TRUE)) {
+    return;
+  }
+
+  $message['from'] = Drupal::config('system.site')->get('mail');
+  $message['subject'] = $params['subject'];
+  $message['body'][] = $params['message'];
+  $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
+  $message['params']['format'] = 'text/html';
+  $message['params']['plain'] = NULL;
+}

@@ -1,0 +1,59 @@
+tieto_lifecycle_management.settings:
+  type: mapping
+  mapping:
+    disabled:
+      type: boolean
+      label: 'Disabled'
+    fields:
+      type: sequence
+      label: 'Fields'
+      sequence:
+        - type: sequence
+          label: 'Entity type'
+          sequence:
+            - type: sequence
+              label: 'Bundle'
+              sequence:
+                - type: mapping
+                  label: 'Field'
+                  mapping:
+                    date:
+                      type: string
+                      label: 'Relative date'
+                    target_state:
+                      type: string
+                      label: 'Target moderation state'
+                    enabled:
+                      type: boolean
+                      label: 'Enabled'
+    actions:
+      type: sequence
+      label: 'Actions'
+      sequence:
+        - type: sequence
+          label: 'Entity type'
+          sequence:
+            - type: sequence
+              label: 'Bundle'
+              sequence:
+                - type: mapping
+                  label: 'Action'
+                  mapping:
+                    date:
+                      type: string
+                      label: 'Relative date'
+                    enabled:
+                      type: boolean
+                      label: 'Enabled'
+    messages:
+      type: sequence
+      label: 'Message type'
+      sequence:
+        - type: sequence
+          label: 'Entity type'
+          sequence:
+            - type: sequence
+              label: 'Bundle'
+              sequence:
+                - type: string
+                  label: 'Message'

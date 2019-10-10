@@ -1,0 +1,24 @@
+services:
+  tieto_lifecycle_management.entity_time:
+    class: Drupal\tieto_lifecycle_management\Service\EntityTime
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+
+  tieto_lifecycle_management.moderation_message:
+    class: Drupal\tieto_lifecycle_management\Service\ModerationMessage
+    arguments:
+      - '@date.formatter'
+      - '@string_translation'
+      - '@config.factory'
+
+  tieto_lifecycle_management.moderation_helper:
+    class: Drupal\tieto_lifecycle_management\Service\ModerationHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@datetime.time'
+      - '@config.factory'
+      - '@logger.factory'
+      - '@event_dispatcher'
+      - '@tieto_lifecycle_management.moderation_message'
+      - '@tieto_lifecycle_management.entity_time'

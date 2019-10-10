@@ -1,0 +1,6 @@
+tieto_lifecycle_management_notifications.configuration_form:
+  title: 'Life-cycle notifications'
+  route_name: tieto_lifecycle_management_notifications.configuration_form
+  parent: tieto_lifecycle_management.config_page_list
+  description: 'Configure life-cycle notifications'
+  weight: 10

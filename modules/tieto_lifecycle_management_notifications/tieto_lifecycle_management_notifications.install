@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Install and update routines.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function tieto_lifecycle_management_notifications_install() {
+  module_set_weight('tieto_lifecycle_management_notifications', 15);
+}
+
+/**
+ * Add the fallback_recipients key to the config.
+ */
+function tieto_lifecycle_management_notifications_update_8601() {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management_notifications.settings');
+  $config->set('fallback_recipients', []);
+  $config->save();
+}
+
+/**
+ * Clear caches.
+ */
+function tieto_lifecycle_management_notifications_update_8602() {
+  drupal_flush_all_caches();
+}
+
+/**
+ * Initialize the new "disabled" config key if needed.
+ */
+function tieto_lifecycle_management_notifications_update_8603() {
+  $factory = \Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management_notifications.settings');
+
+  $disabledConfig = $config->get('disabled');
+
+  if (!is_bool($disabledConfig)) {
+    $config->set('disabled', FALSE);
+    $config->save();
+  }
+
+  drupal_flush_all_caches();
+}

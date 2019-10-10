@@ -1,0 +1,15 @@
+tieto_lifecycle_management_notifications.settings:
+  type: mapping
+  mapping:
+    disabled:
+      type: boolean
+      label: 'Disabled'
+    contact_mail:
+      type: string
+      label: 'Contact mail'
+    fallback_recipients:
+      type: sequence
+      label: 'Fallback recipient mails'
+      sequence:
+        type: string
+        label: 'Email'
