@@ -1,12 +1,12 @@
 <?php
 
-namespace Brainsum\TietoModules\tieto_lifecycle_management\Tests\Behat\Context;
+namespace Drupal\tieto_lifecycle_management\Tests\Behat\Context;
 
 use Behat\Behat\Tester\Exception\PendingException;
-use Brainsum\DrupalBehatTesting\Helper\ModerationStateTrait;
-use Brainsum\DrupalBehatTesting\Helper\PreviousNodeTrait;
-use Brainsum\DrupalBehatTesting\Helper\ScheduledUpdateTrait;
-use Brainsum\DrupalBehatTesting\Helper\TaxonomyTermTrait;
+use Brainsum\DrupalBehatTesting\Traits\ModerationStateTrait;
+use Brainsum\DrupalBehatTesting\Traits\PreviousNodeTrait;
+use Brainsum\DrupalBehatTesting\Traits\ScheduledUpdateTrait;
+use Brainsum\DrupalBehatTesting\Traits\TaxonomyTermTrait;
 use DateInterval;
 use Drupal;
 use Drupal\Core\Datetime\DrupalDateTime;

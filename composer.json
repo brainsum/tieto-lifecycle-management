@@ -29,10 +29,5 @@
     "require-dev": {
         "brainsum/drupal-behat-testing": "^0.11",
         "roave/security-advisories": "dev-master"
-    },
-    "autoload": {
-        "psr-4": {
-            "Brainsum\\tieto_lifecycle_management\\Tests\\Behat\\": "tests/Behat/"
-        }
     }
 }
