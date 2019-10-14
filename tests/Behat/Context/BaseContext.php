@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\tieto_lifecycle_management\Tests\Behat\Context;
+namespace Brainsum\tieto_lifecycle_management\Tests\Behat\Context;
 
 use Behat\Behat\Tester\Exception\PendingException;
 use Brainsum\DrupalBehatTesting\Traits\ModerationStateTrait;
