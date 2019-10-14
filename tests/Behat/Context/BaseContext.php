@@ -227,11 +227,12 @@ abstract class BaseContext extends RawDrupalContext {
   }
 
   /**
-   * Asserts that the moderation state changed for the content.
+   * Asserts that the moderation state is the given one for the content.
    *
    * @Then the moderation state of the content should change to :targetModerationState
+   * @Then the moderation state of the content should stay :targetModerationState
    */
-  public function contentStateShouldChange(string $moderationState): void {
+  public function moderationStateIsTheGivenOne(string $moderationState): void {
     $stateMachineName = $this->stateMachineName($moderationState);
     $this->reloadPreviousNode();
     Assert::assertEquals($stateMachineName,
@@ -245,6 +246,15 @@ abstract class BaseContext extends RawDrupalContext {
    */
   public function contentShouldBeDeleted(): void {
     Assert::assertTrue($this->previousNodeWasDeleted());
+  }
+
+  /**
+   * Asserts that the content has not been deleted.
+   *
+   * @Then the content should not be deleted
+   */
+  public function theContentShouldNotBeDeleted(): void {
+    Assert::assertFalse($this->previousNodeWasDeleted());
   }
 
   /**
