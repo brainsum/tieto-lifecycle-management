@@ -93,6 +93,13 @@ final class ModerationHelper {
    * @todo: Generalize.
    */
   public function notificationMessage(FieldableEntityInterface $entity): ?TranslatableMarkup {
+    if (
+      ($isDisabled = $this->lifeCycleConfig->get('disabled'))
+      && $isDisabled === TRUE
+    ) {
+      return NULL;
+    }
+
     if ($this->moderationIsIgnored($entity)) {
       return NULL;
     }
