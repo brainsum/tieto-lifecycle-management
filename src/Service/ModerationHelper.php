@@ -96,12 +96,6 @@ final class ModerationHelper {
     $entityBundle = $entity->bundle();
     $actions = $this->lifeCycleConfig->get($updateType);
 
-    dpm([
-      $entityType,
-      $entityBundle,
-      $actions[$entityType][$entityBundle][$update],
-    ], 'update enabled status');
-
     if (empty($actions)) {
       return FALSE;
     }
