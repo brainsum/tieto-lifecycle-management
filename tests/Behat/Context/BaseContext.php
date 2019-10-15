@@ -280,8 +280,7 @@ abstract class BaseContext extends RawDrupalContext {
     string $message
   ): void {
     $this->assertSession()
-      ->pageTextNotContains($this->parseModerationMessage($messageType,
-        $message));
+      ->pageTextNotContains($this->parseModerationMessage($messageType, $message));
   }
 
   /**
@@ -293,7 +292,7 @@ abstract class BaseContext extends RawDrupalContext {
    *   Message.
    *
    * @return string
-   *   The parsed message.
+   *   The parsed message (either a fragment, or the full one).
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -312,6 +311,7 @@ abstract class BaseContext extends RawDrupalContext {
     $entityTime = Drupal::service('tieto_lifecycle_management.entity_time');
 
     $timestamp = NULL;
+
     switch ($messageType) {
       case 'delete':
         // @todo: Cleanup.
@@ -329,9 +329,8 @@ abstract class BaseContext extends RawDrupalContext {
         break;
     }
 
-    // @todo: This will make some cases fail. Maybe, in this case try searching for a message regex without the date. The should be good enough.
     if ($timestamp === NULL) {
-      throw new RuntimeException('Placeholder replacement for the message could not be determined.');
+      return str_replace("@{$messageType}Date", '', $message);
     }
 
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter */
