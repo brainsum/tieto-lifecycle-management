@@ -79,6 +79,41 @@ final class ModerationHelper {
   }
 
   /**
+   * Check if the update is enabled.
+   *
+   * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
+   *   The entity.
+   * @param string $updateType
+   *   The update type (action, fields).
+   * @param string $update
+   *   The update.
+   *
+   * @return bool
+   *   TRUE if it's enabled.
+   */
+  private function isUpdateEnabled(FieldableEntityInterface $entity, string $updateType, string $update): bool {
+    $entityType = $entity->getEntityTypeId();
+    $entityBundle = $entity->bundle();
+    $actions = $this->lifeCycleConfig->get($updateType);
+
+    dpm([
+      $entityType,
+      $entityBundle,
+      $actions[$entityType][$entityBundle][$update],
+    ], 'update enabled status');
+
+    if (empty($actions)) {
+      return FALSE;
+    }
+
+    if (isset($actions[$entityType][$entityBundle][$update]['enabled'])) {
+      return $actions[$entityType][$entityBundle][$update]['enabled'] === TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
    * Return the notification message.
    *
    * @param \Drupal\Core\Entity\FieldableEntityInterface $entity
@@ -112,20 +147,37 @@ final class ModerationHelper {
       return NULL;
     }
 
+    // @todo: Cleanup.
     switch ($this->entityModerationState($entity)) {
       case 'unpublished':
+        if (!$this->isUpdateEnabled($entity, 'actions', 'delete_unpublished_entity')) {
+          return NULL;
+        }
+
         $deleteTime = $this->entityTime->unpublishedEntityDeleteTime($entity);
         return $deleteTime === NULL ? NULL : $this->moderationMessage->draftDeleteNotificationMessage($entity, $deleteTime);
 
       case 'published':
+        if (!$this->isUpdateEnabled($entity, 'fields', 'scheduled_unpublish_date')) {
+          return NULL;
+        }
+
         $unpublishTime = $this->entityTime->unpublishTime($entity);
         return $unpublishTime === NULL ? NULL : $this->moderationMessage->unpublishNotificationMessage($entity, $unpublishTime);
 
       case 'unpublished_content':
+        if (!$this->isUpdateEnabled($entity, 'fields', 'scheduled_trash_date')) {
+          return NULL;
+        }
+
         $archiveTime = $this->entityTime->archiveTime($entity);
         return $archiveTime === NULL ? NULL : $this->moderationMessage->archiveNotificationMessage($entity, $archiveTime);
 
       case 'trash':
+        if (!$this->isUpdateEnabled($entity, 'actions', 'delete_published_entity')) {
+          return NULL;
+        }
+
         $deleteTime = $this->entityTime->deleteTime($entity);
         return $deleteTime === NULL ? NULL : $this->moderationMessage->oldDeleteNotificationMessage($entity, $deleteTime);
 
