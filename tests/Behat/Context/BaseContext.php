@@ -2,6 +2,8 @@
 
 namespace Brainsum\tieto_lifecycle_management\Tests\Behat\Context;
 
+use Behat\Behat\Hook\Scope\AfterFeatureScope;
+use Behat\Behat\Hook\Scope\BeforeFeatureScope;
 use Behat\Behat\Tester\Exception\PendingException;
 use Brainsum\DrupalBehatTesting\Traits\ModerationStateTrait;
 use Brainsum\DrupalBehatTesting\Traits\PreviousNodeTrait;
@@ -34,10 +36,89 @@ abstract class BaseContext extends RawDrupalContext {
   protected const TIMEZONE = 'Europe/Budapest';
 
   /**
+   * Config name for this module.
+   */
+  protected const MODULE_CONFIG = 'tieto_lifecycle_management.settings';
+
+  /**
    * Navigate to the edit page of a previous node.
    */
   private function visitPreviousNodeEditPage(): void {
     $this->visitPath("/node/{$this->previousNode()->id()}/edit");
+  }
+
+  /**
+   * Restore a backup of the default config.
+   *
+   * @param \Behat\Behat\Hook\Scope\BeforeFeatureScope $scope
+   *   Behat scope.
+   *
+   * @BeforeFeature
+   */
+  public static function backupConfigBeforeFeature(BeforeFeatureScope $scope): void {
+    (new static())->doBackupConfig();
+  }
+
+  /**
+   * Restore a backup of the default config.
+   *
+   * @param \Behat\Behat\Hook\Scope\AfterFeatureScope $scope
+   *   Behat scope.
+   *
+   * @AfterFeature
+   */
+  public static function restoreConfigAfterFeature(AfterFeatureScope $scope): void {
+    (new static())->doRestoreConfig();
+  }
+
+  /**
+   * Disables the life-cycle management globally.
+   *
+   * @Given life-cycle management has been globally disabled
+   */
+  public function lifeCycleManagementHasBeenGloballyDisabled(): void {
+    $lifeCycleConfig = Drupal::configFactory()
+      ->getEditable('tieto_lifecycle_management.settings');
+    $lifeCycleConfig->set('disabled', TRUE);
+    $lifeCycleConfig->save();
+    Drupal::configFactory()->clearStaticCache();
+  }
+
+  /**
+   * Disables the life-cycle management individually.
+   *
+   * @Given life-cycle management has been individually disabled
+   */
+  public function lifeCycleManagementHasBeenIndividuallyDisabled(): void {
+    $lifeCycleConfig = Drupal::configFactory()
+      ->getEditable('tieto_lifecycle_management.settings');
+
+    $lfcActions = $lifeCycleConfig->get('actions');
+
+    foreach ($lfcActions as $type => $bundles) {
+      foreach ($bundles as $bundle => $actions) {
+        foreach ($actions as $action => $settings) {
+          $lfcActions[$type][$bundle][$action]['enabled'] = FALSE;
+        }
+      }
+    }
+
+    $lifeCycleConfig->set('actions', $lfcActions);
+
+    $lfcFields = $lifeCycleConfig->get('fields');
+
+    foreach ($lfcFields as $type => $bundles) {
+      foreach ($bundles as $bundle => $fields) {
+        foreach ($fields as $field => $settings) {
+          $lfcFields[$type][$bundle][$field]['enabled'] = FALSE;
+        }
+      }
+    }
+
+    $lifeCycleConfig->set('fields', $lfcFields);
+
+    $lifeCycleConfig->save(TRUE);
+    Drupal::configFactory()->clearStaticCache();
   }
 
   /**
@@ -358,6 +439,33 @@ abstract class BaseContext extends RawDrupalContext {
     $date = new DrupalDateTime('now', static::TIMEZONE);
     $date->sub(DateInterval::createFromDateString($time));
     return $date;
+  }
+
+  /**
+   * Do the backup.
+   */
+  protected function doBackupConfig(): void {
+    Drupal::state()->set(
+      'behat_testing.config_backup.' . static::MODULE_CONFIG,
+      Drupal::configFactory()->get(static::MODULE_CONFIG)->getRawData()
+    );
+  }
+
+  /**
+   * Do the restore.
+   */
+  protected function doRestoreConfig(): void {
+    $savedConfig = Drupal::state()
+      ->get('behat_testing.config_backup.' . static::MODULE_CONFIG, []);
+
+    if (!empty($savedConfig)) {
+      $currentConfig = Drupal::configFactory()->getEditable(static::MODULE_CONFIG);
+      $currentConfig->setData($savedConfig);
+      $currentConfig->save();
+
+      Drupal::state()->delete('behat_testing.config_backup.' . static::MODULE_CONFIG);
+    }
+    Drupal::configFactory()->clearStaticCache();
   }
 
 }
