@@ -277,6 +277,25 @@ final class LifeCycleEventSubscriber implements EventSubscriberInterface {
   }
 
   /**
+   * Filter users based on set attributes and an "already notified" list.
+   *
+   * @param array $users
+   *   The users to be filtered.
+   * @param array $notifiedUsers
+   *   Already notified users.
+   *
+   * @return array
+   *   Filtered users.
+   */
+  private function filterUsers(array $users, array $notifiedUsers): array {
+    return array_filter($users, static function (UserInterface $user) use ($notifiedUsers) {
+      $alreadyNotified = in_array($user->id(), $notifiedUsers, FALSE);
+      $noMail = ($user->getEmail() === NULL);
+      return !($alreadyNotified || $noMail || $user->isBlocked());
+    });
+  }
+
+  /**
    * Return not yet notified users for an entity and notification ID.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
@@ -300,15 +319,10 @@ final class LifeCycleEventSubscriber implements EventSubscriberInterface {
       $notifiedUsers = $notificationData[$notificationId];
     }
 
-    $users = $this->getEntityUsers($entity);
-    $users = array_filter($users, static function (UserInterface $user) use ($notifiedUsers) {
-      $alreadyNotified = in_array($user->id(), $notifiedUsers, FALSE);
-      $noMail = ($user->getEmail() === NULL);
-      return !($alreadyNotified || $noMail || $user->isBlocked());
-    });
+    $users = $this->filterUsers($this->getEntityUsers($entity), $notifiedUsers);
 
     if (empty($users)) {
-      $users = $this->loadFallbackUsers();
+      $users = $this->filterUsers($this->loadFallbackUsers(), $notifiedUsers);
     }
 
     return $users;
