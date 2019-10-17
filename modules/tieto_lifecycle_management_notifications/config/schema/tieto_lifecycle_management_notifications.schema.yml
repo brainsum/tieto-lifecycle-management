@@ -4,6 +4,9 @@ tieto_lifecycle_management_notifications.settings:
     disabled:
       type: boolean
       label: 'Disabled'
+    from_mail:
+      type: string
+      label: 'From mail'
     contact_mail:
       type: string
       label: 'Contact mail'

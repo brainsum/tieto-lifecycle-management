@@ -16,7 +16,7 @@ function tieto_lifecycle_management_notifications_install() {
  * Add the fallback_recipients key to the config.
  */
 function tieto_lifecycle_management_notifications_update_8601() {
-  $factory = \Drupal::configFactory();
+  $factory = Drupal::configFactory();
   $config = $factory->getEditable('tieto_lifecycle_management_notifications.settings');
   $config->set('fallback_recipients', []);
   $config->save();
@@ -33,13 +33,31 @@ function tieto_lifecycle_management_notifications_update_8602() {
  * Initialize the new "disabled" config key if needed.
  */
 function tieto_lifecycle_management_notifications_update_8603() {
-  $factory = \Drupal::configFactory();
+  $factory = Drupal::configFactory();
   $config = $factory->getEditable('tieto_lifecycle_management_notifications.settings');
 
   $disabledConfig = $config->get('disabled');
 
   if (!is_bool($disabledConfig)) {
     $config->set('disabled', FALSE);
+    $config->save();
+  }
+
+  drupal_flush_all_caches();
+}
+
+/**
+ * Copy the site.mail to the new from_mail field.
+ */
+function tieto_lifecycle_management_notifications_update_8604() {
+  $factory = Drupal::configFactory();
+  $config = $factory->getEditable('tieto_lifecycle_management_notifications.settings');
+  $fromMail = $config->get('from_mail');
+
+  if (empty($fromMail) || !is_string($fromMail)) {
+    $siteMail = Drupal::config('system.site')->get('mail');
+
+    $config->set('from_mail', $siteMail);
     $config->save();
   }
 
