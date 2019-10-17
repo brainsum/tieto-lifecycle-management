@@ -77,11 +77,16 @@ abstract class BaseContext extends RawDrupalContext {
    * @Given life-cycle management has been globally disabled
    */
   public function lifeCycleManagementHasBeenGloballyDisabled(): void {
-    $lifeCycleConfig = Drupal::configFactory()
-      ->getEditable('tieto_lifecycle_management.settings');
-    $lifeCycleConfig->set('disabled', TRUE);
-    $lifeCycleConfig->save();
-    Drupal::configFactory()->clearStaticCache();
+    $this->disableUpdatesGlobally(TRUE);
+  }
+
+  /**
+   * Enables the life-cycle management globally.
+   *
+   * @Given life-cycle management has been globally enabled
+   */
+  public function lifeCycleManagementHasBeenGloballyEnabled(): void {
+    $this->disableUpdatesGlobally(FALSE);
   }
 
   /**
@@ -90,35 +95,16 @@ abstract class BaseContext extends RawDrupalContext {
    * @Given life-cycle management has been individually disabled
    */
   public function lifeCycleManagementHasBeenIndividuallyDisabled(): void {
-    $lifeCycleConfig = Drupal::configFactory()
-      ->getEditable('tieto_lifecycle_management.settings');
+    $this->enableUpdatesIndividually(FALSE);
+  }
 
-    $lfcActions = $lifeCycleConfig->get('actions');
-
-    foreach ($lfcActions as $type => $bundles) {
-      foreach ($bundles as $bundle => $actions) {
-        foreach ($actions as $action => $settings) {
-          $lfcActions[$type][$bundle][$action]['enabled'] = FALSE;
-        }
-      }
-    }
-
-    $lifeCycleConfig->set('actions', $lfcActions);
-
-    $lfcFields = $lifeCycleConfig->get('fields');
-
-    foreach ($lfcFields as $type => $bundles) {
-      foreach ($bundles as $bundle => $fields) {
-        foreach ($fields as $field => $settings) {
-          $lfcFields[$type][$bundle][$field]['enabled'] = FALSE;
-        }
-      }
-    }
-
-    $lifeCycleConfig->set('fields', $lfcFields);
-
-    $lifeCycleConfig->save(TRUE);
-    Drupal::configFactory()->clearStaticCache();
+  /**
+   * Enables the life-cycle management individually.
+   *
+   * @Given life-cycle management has been individually enabled
+   */
+  public function lifeCycleManagementHasBeenIndividuallyEnabled(): void {
+    $this->enableUpdatesIndividually(TRUE);
   }
 
   /**
@@ -465,6 +451,58 @@ abstract class BaseContext extends RawDrupalContext {
 
       Drupal::state()->delete('behat_testing.config_backup.' . static::MODULE_CONFIG);
     }
+    Drupal::configFactory()->clearStaticCache();
+  }
+
+  /**
+   * Sets update (disabled) status to TRUE or FALSE.
+   *
+   * @param bool $status
+   *   TRUE for disabling updates globally.
+   */
+  protected function disableUpdatesGlobally(bool $status): void {
+    $lifeCycleConfig = Drupal::configFactory()
+      ->getEditable('tieto_lifecycle_management.settings');
+    $lifeCycleConfig->set('disabled', $status);
+    $lifeCycleConfig->save();
+    Drupal::configFactory()->clearStaticCache();
+  }
+
+  /**
+   * Sets update (enabled) statuses to TRUE or FALSE.
+   *
+   * @param bool $status
+   *   TRUE for enabling updates individually.
+   */
+  protected function enableUpdatesIndividually(bool $status): void {
+    $lifeCycleConfig = Drupal::configFactory()
+      ->getEditable('tieto_lifecycle_management.settings');
+
+    $lfcActions = $lifeCycleConfig->get('actions');
+
+    foreach ($lfcActions as $type => $bundles) {
+      foreach ($bundles as $bundle => $actions) {
+        foreach ($actions as $action => $settings) {
+          $lfcActions[$type][$bundle][$action]['enabled'] = $status;
+        }
+      }
+    }
+
+    $lifeCycleConfig->set('actions', $lfcActions);
+
+    $lfcFields = $lifeCycleConfig->get('fields');
+
+    foreach ($lfcFields as $type => $bundles) {
+      foreach ($bundles as $bundle => $fields) {
+        foreach ($fields as $field => $settings) {
+          $lfcFields[$type][$bundle][$field]['enabled'] = $status;
+        }
+      }
+    }
+
+    $lifeCycleConfig->set('fields', $lfcFields);
+
+    $lifeCycleConfig->save(TRUE);
     Drupal::configFactory()->clearStaticCache();
   }
 
